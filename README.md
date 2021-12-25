@@ -1,2 +1,5 @@
-# bingo-be
-Be of Bingo project.
+# Bingo-be
+Back-end of Bingo project.
+
+Powered By: 
+###### SPC, PR
