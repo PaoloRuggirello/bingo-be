@@ -1,16 +1,14 @@
 from flask import Flask
+from dto.BingoPaperDTO import BingoPaperDTO
 from bingo.BingoPaper import BingoPaper
 
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.route("/newBingoPaper")
 def hello():
     bingo_paper = BingoPaper()
-    result = ''
-    for card in bingo_paper.cards:
-        result += str(card) + '\n\n'
-    return result
+    return BingoPaperDTO(bingo_paper).toJSON()
 
 
 if __name__ == '__main__':
