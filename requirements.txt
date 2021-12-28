@@ -1,2 +1,2 @@
 Flask~=2.0.2
-bingo~=0.1.0
+../bingo-core/dist/bingo-latest.tar.gz
