@@ -11,6 +11,5 @@ class BingoPaperDTO:
             self.cardDTOs = np.append(self.cardDTOs, CardDTO(card))
         self.cardDTOs = self.cardDTOs.tolist()
 
-
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
