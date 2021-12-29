@@ -3,6 +3,7 @@ from model.Room import Room
 from model.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
 from bingo.BingoPaper import BingoPaper
+from controller.RoomController import room_controller
 
 
 @app.route("/newBingoPaper")
@@ -26,4 +27,5 @@ def main():
 
 if __name__ == '__main__':
     db.create_all()
+    app.register_blueprint(room_controller)
     app.run()
