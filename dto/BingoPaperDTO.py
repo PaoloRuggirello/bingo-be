@@ -6,9 +6,11 @@ from dto.CardDTO import CardDTO
 class BingoPaperDTO:
 
     def __init__(self, bingo_paper):
+        self.bingo_paper_id = str(bingo_paper.id)
         self.cardDTOs = np.empty(shape=(0))
         for card in bingo_paper.cards:
             self.cardDTOs = np.append(self.cardDTOs, CardDTO(card))
+        self.number_of_cards = len(self.cardDTOs)
         self.cardDTOs = self.cardDTOs.tolist()
 
     def toJSON(self):
