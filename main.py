@@ -8,7 +8,7 @@ from bingo.BingoPaper import BingoPaper
 @app.route("/newBingoPaper")
 def hello():
     bingo_paper = BingoPaper()
-    user = User("NickName")
+    user = User("NickName", 1)
     db.session.add(bingo_paper)
     db.session.add(user)
     db.session.commit()
