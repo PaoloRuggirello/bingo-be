@@ -27,5 +27,5 @@ def main():
 
 if __name__ == '__main__':
     db.create_all()
-    app.register_blueprint(room_controller)
+    app.register_blueprint(room_controller, url_prefix='/room')
     app.run()
