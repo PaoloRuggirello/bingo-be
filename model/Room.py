@@ -8,6 +8,7 @@ class Room(db.Model):
     name = db.Column('name', db.String(20))
     extracted_numbers = db.Column('extracted_numbers', db.String(200), nullable=True)
     papers = relationship("BingoPaper")
+    users = relationship("User")
 
     def __init__(self, name):
         self.name = name
