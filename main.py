@@ -4,6 +4,7 @@ from model.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
 from bingo.BingoPaper import BingoPaper
 from controller.RoomController import room_controller
+from controller.UserController import user_controller
 
 
 @app.route("/newBingoPaper")
@@ -25,7 +26,12 @@ def main():
     return "First room added"
 
 
+def register_blueprints():
+    app.register_blueprint(room_controller, url_prefix='/room')
+    app.register_blueprint(user_controller, url_prefix='/user')
+
+
 if __name__ == '__main__':
     db.create_all()
-    app.register_blueprint(room_controller, url_prefix='/room')
+    register_blueprints()
     app.run()

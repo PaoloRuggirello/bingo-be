@@ -14,10 +14,9 @@ def get_first_available_paper_in_room(room):
             for card in paper.cards:
                 if card.user_id is None:
                     return paper
-    else:
-        new_bingo_paper = BingoPaper(room.id)
-        bpr.save(new_bingo_paper)
-        return new_bingo_paper
+    new_bingo_paper = BingoPaper(room.id)
+    bpr.save(new_bingo_paper)
+    return new_bingo_paper
 
 
 def remove_assigned_cards_from_paper(bingo_paper):
@@ -27,3 +26,16 @@ def remove_assigned_cards_from_paper(bingo_paper):
             filtered_paper.append(card)
     bingo_paper.cards = filtered_paper
     return bingo_paper
+
+
+def get_user_from_room(room, user_nickname):
+    for user in room.users:
+        if user.nickname == user_nickname:
+            return user
+    return None
+
+
+def exists_user_in_room(room, user_nickname):
+    users_nicknames = [user.nickname for user in room.users]
+    return user_nickname in users_nicknames
+
