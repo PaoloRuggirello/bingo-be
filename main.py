@@ -1,6 +1,6 @@
 from bingo.Utils import app, db
-from model.Room import Room
-from model.User import User
+from bingo.Room import Room
+from bingo.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
 from bingo.BingoPaper import BingoPaper
 from controller.RoomController import room_controller

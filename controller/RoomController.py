@@ -1,19 +1,25 @@
 from flask import Blueprint
-from model.Room import Room
-from model.User import User
+from bingo.Room import Room
+from bingo.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
+from dto.CreatedRoomDTO import CreatedRoomDTO
 import repository.RoomRepository as rr
 import repository.UserRepository as ur
+import repository.BingoPaperRepository as bpr
 from helper.RoomHelper import *
 
 room_controller = Blueprint('room_controller', __name__)
 
 
-@room_controller.route("/new/<room_name>", methods=['POST'])
-def create_room(room_name):
+@room_controller.route("/new/<room_name>/<host_nickname>", methods=['POST'])
+def create_room(room_name, host_nickname):
     room = Room(room_name)
     rr.save(room)
-    return room.code
+    room_host = User(host_nickname, room.id)
+    ur.save(room_host)
+    bank_bingo_paper = generate_bank_bingo_paper(room.id, room_host.id)
+    bpr.save(bank_bingo_paper)
+    return CreatedRoomDTO(room.code, BingoPaperDTO(bank_bingo_paper).toJSON()).toJSON()
 
 
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])

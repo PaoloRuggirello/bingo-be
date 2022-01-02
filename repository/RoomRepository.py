@@ -1,5 +1,5 @@
 from bingo.Utils import db
-from model.Room import Room
+from bingo.Room import Room
 
 
 def save(room):

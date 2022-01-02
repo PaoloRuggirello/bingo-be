@@ -4,7 +4,7 @@ import json
 class CardDTO:
 
     def __init__(self, card):
-        self.card_numbers = card.card_numbers
+        self.card_numbers = card.card_numbers.tolist()
         self.id = card.id
 
     def toJSON(self):

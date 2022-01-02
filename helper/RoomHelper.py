@@ -39,3 +39,10 @@ def exists_user_in_room(room, user_nickname):
     users_nicknames = [user.nickname for user in room.users]
     return user_nickname in users_nicknames
 
+
+def generate_bank_bingo_paper(room_id, host_id):
+    bank_bingo_paper = BingoPaper(room_id, True, True)
+    for card in bank_bingo_paper.cards:
+        card.user_id = host_id
+    return bank_bingo_paper
+

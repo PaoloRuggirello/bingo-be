@@ -17,7 +17,7 @@ def assign_cards(room_code, user_nickname):
     card_ids_to_assign = request.json['cards']
     cards = cr.find_by_card_id_in(card_ids_to_assign)
     already_assigned_cards = user_helper.assign_cards_to_user(user, cards)
-    return (json.dumps(already_assigned_cards.tolist(), default=lambda o: o.__dict__, sort_keys=True, indent=4), 400) if len(already_assigned_cards) > 0 else ('', 200)
+    return (already_assigned_cards.dumps(), 400) if len(already_assigned_cards) > 0 else ('', 200)
 
 
 
