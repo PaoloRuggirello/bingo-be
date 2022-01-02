@@ -5,7 +5,6 @@ from dto.BingoPaperDTO import BingoPaperDTO
 from dto.CreatedRoomDTO import CreatedRoomDTO
 import repository.RoomRepository as rr
 import repository.UserRepository as ur
-import repository.BingoPaperRepository as bpr
 from helper.RoomHelper import *
 
 room_controller = Blueprint('room_controller', __name__)

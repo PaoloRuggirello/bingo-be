@@ -1,6 +1,5 @@
 from bingo.BingoPaper import BingoPaper
 import repository.BingoPaperRepository as bpr
-import numpy as np
 
 
 def is_nickname_unique_in_room(room, nickname):
