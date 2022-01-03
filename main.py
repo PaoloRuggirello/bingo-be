@@ -1,4 +1,4 @@
-from bingo.Utils import app, db
+from bingo.Utils import app, db, socketio
 from bingo.Room import Room
 from bingo.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
@@ -34,4 +34,4 @@ def register_blueprints():
 if __name__ == '__main__':
     db.create_all()
     register_blueprints()
-    app.run()
+    socketio.run(app)
