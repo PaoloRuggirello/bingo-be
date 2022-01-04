@@ -4,8 +4,10 @@ from dto.BingoPaperDTO import BingoPaperDTO
 from bingo.BingoPaper import BingoPaper
 from controller.RoomController import room_controller
 from controller.UserController import user_controller
-from flask_socketio import join_room, emit, rooms, send
+from flask_socketio import join_room, emit, leave_room
 from flask import request
+
+users_subscriptions = {}
 
 
 @app.route("/newBingoPaper")
@@ -26,17 +28,29 @@ def main():
     return "First room added"
 
 
-@socketio.on("message")
-def extract_number(data):
-    print("Received message: " + data)
-    #socketio.emit("IOresponse", "This is the reposnse")
-
 @socketio.on("join_room")
 def join(data):
+    global users_subscriptions
     room_code = data["room_code"]
     user_nickname = data["user_nickname"]
-    join_room(room_code, sid=request.sid)
-    send(f"{user_nickname} joined the room, sid: {request.sid}", room=room_code)
+    user_sid = request.sid
+    if user_sid in users_subscriptions:
+        emit("ErrorMessage", {"msg":f"{user_nickname} is already parts of room with code: {users_subscriptions[user_sid][1]}... You need to leave your current room to join another on"})
+    else:
+        join_room(room_code, sid=request.sid)
+        users_subscriptions[user_sid] = [user_nickname, room_code]
+        emit("RoomMessages", {'msg': user_nickname + ' has entered the room.'}, room=room_code)
+
+
+@socketio.on("leave_room")
+def leave(data):
+    global users_subscriptions
+    user_subscription = users_subscriptions[request.sid]
+    user_nickname = user_subscription[0]
+    room_code = user_subscription[1]
+    emit("RoomMessages", {"msg":f"{user_nickname} left the room"}, room=room_code)
+    leave_room(room_code, request.sid)
+    del users_subscriptions[request.sid]
 
 
 def register_blueprints():
