@@ -18,7 +18,7 @@ def create_room(room_name, host_nickname):
     ur.save(room_host)
     bank_bingo_paper = generate_bank_bingo_paper(room.id, room_host.id)
     bpr.save(bank_bingo_paper)
-    return CreatedRoomDTO(room.code, BingoPaperDTO(bank_bingo_paper).toJSON()).toJSON()
+    return CreatedRoomDTO(room.code, room.name, BingoPaperDTO(bank_bingo_paper).toJSON()).toJSON()
 
 
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])
