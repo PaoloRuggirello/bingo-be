@@ -1,10 +1,11 @@
 from bingo.Utils import app, db, socketio
-from bingo.Room import Room
 from bingo.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
 from bingo.BingoPaper import BingoPaper
 from controller.RoomController import room_controller
 from controller.UserController import user_controller
+from flask_socketio import join_room, emit, rooms, send
+from flask import request
 
 
 @app.route("/newBingoPaper")
@@ -19,11 +20,23 @@ def hello():
 
 @app.route("/")
 def main():
-    print("DB created")
-    room = Room("First room")
-    db.session.add(room)
-    db.session.commit()
+    number = 52
+    socketio.send({"messsage":"This is my message"}, json=True, room="Myroom")
+    print("Message sent")
     return "First room added"
+
+
+@socketio.on("message")
+def extract_number(data):
+    print("Received message: " + data)
+    #socketio.emit("IOresponse", "This is the reposnse")
+
+@socketio.on("join_room")
+def join(data):
+    room_code = data["room_code"]
+    user_nickname = data["user_nickname"]
+    join_room(room_code, sid=request.sid)
+    send(f"{user_nickname} joined the room, sid: {request.sid}", room=room_code)
 
 
 def register_blueprints():

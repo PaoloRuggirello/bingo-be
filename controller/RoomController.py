@@ -1,4 +1,3 @@
-from bingo.Utils import socketio
 from flask import Blueprint
 from bingo.Room import Room
 from bingo.User import User
@@ -7,12 +6,11 @@ from dto.CreatedRoomDTO import CreatedRoomDTO
 import repository.RoomRepository as rr
 import repository.UserRepository as ur
 from helper.RoomHelper import *
-from flask_socketio import join_room as io_join_room, send, rooms
 
 room_controller = Blueprint('room_controller', __name__)
 
 
-@room_controller.route("/new/<room_name>/<host_nickname>", methods=['POST'])
+@room_controller.route("/create/<room_name>/<host_nickname>", methods=['POST'])
 def create_room(room_name, host_nickname):
     room = Room(room_name)
     rr.save(room)
@@ -20,8 +18,6 @@ def create_room(room_name, host_nickname):
     ur.save(room_host)
     bank_bingo_paper = generate_bank_bingo_paper(room.id, room_host.id)
     bpr.save(bank_bingo_paper)
-    io_join_room("Room", sid=host_nickname, namespace="/Room")
-    send({"Joined"}, namespace="/Room", to="Room")
     return CreatedRoomDTO(room.code, BingoPaperDTO(bank_bingo_paper).toJSON()).toJSON()
 
 
@@ -35,14 +31,3 @@ def join_room(room_code, user_nickname):
     paper_to_return = get_first_available_paper_in_room(room)
     paper_to_return = remove_assigned_cards_from_paper(paper_to_return)
     return BingoPaperDTO(paper_to_return).toJSON()
-
-
-@room_controller.route("/send/<msg>")
-def send_msg(msg):
-    io_join_room("Room", sid="host_nickname", namespace='/Room')
-    send({msg}, namespace="Room", to="Room")
-
-
-@socketio.on("msg", namespace='/Room')
-def message(msg):
-    print(msg)
