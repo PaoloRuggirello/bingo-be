@@ -7,5 +7,5 @@ def save(room):
     db.session.commit()
 
 
-def find_by_code(looking_room_code):
-    return Room.query.filter_by(code=looking_room_code).first()
+def find_by_code(room_code):
+    return Room.query.filter_by(code=room_code).first()

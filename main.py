@@ -1,31 +1,10 @@
 from bingo.Utils import app, db, socketio
-from bingo.User import User
-from dto.BingoPaperDTO import BingoPaperDTO
-from bingo.BingoPaper import BingoPaper
 from controller.RoomController import room_controller
 from controller.UserController import user_controller
 from flask_socketio import join_room, emit, leave_room
 from flask import request
 
 users_subscriptions = {}
-
-
-@app.route("/newBingoPaper")
-def hello():
-    bingo_paper = BingoPaper()
-    user = User("NickName", 1)
-    db.session.add(bingo_paper)
-    db.session.add(user)
-    db.session.commit()
-    return BingoPaperDTO(bingo_paper).toJSON()
-
-
-@app.route("/")
-def main():
-    number = 52
-    socketio.send({"messsage":"This is my message"}, json=True, room="Myroom")
-    print("Message sent")
-    return "First room added"
 
 
 @socketio.on("join_room")
@@ -39,7 +18,7 @@ def join(data):
     else:
         join_room(room_code, sid=request.sid)
         users_subscriptions[user_sid] = [user_nickname, room_code]
-        emit("RoomMessages", {'msg': user_nickname + ' has entered the room.'}, room=room_code)
+        emit("RoomMessages", {'msg': user_nickname + ' joined.'}, room=room_code)
 
 
 @socketio.on("leave_room")
