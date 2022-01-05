@@ -40,12 +40,15 @@ def join_room(room_code, user_nickname):
 @room_controller.route("/extract/<room_code>/<unique_code>", methods=['POST'])
 def extract_number(room_code, unique_code):
     room = rr.find_by_code(room_code)
-    if room.unique_code != unique_code:
-        return "Wrong unique code!", 403
-    extract_number_indexes = room.extracted_numbers - 1 if len(room.extracted_numbers) > 0 else []
-    remaining_numbers = np.delete(PAPER_NUMBERS, extract_number_indexes)
-    extracted_number = choice(remaining_numbers)
-    room.extracted_numbers = np.append(room.extracted_numbers, int(extracted_number))
-    db.session.commit()
-    socketio.emit("ExtractedNumber", {"number":str(extracted_number)}, room=room_code)
-    return str(extracted_number)
+    if room is not None:
+        if room.unique_code != unique_code:
+            return "Wrong unique code!", 403
+        extract_numbers_indexes = room.extracted_numbers - 1 if room.extracted_numbers is not None and len(room.extracted_numbers) > 0 else []
+        remaining_numbers = np.delete(PAPER_NUMBERS, extract_numbers_indexes)
+        extracted_number = choice(remaining_numbers)
+        room.extracted_numbers = np.append(room.extracted_numbers, extracted_number) if room.extracted_numbers is not None else np.array([extracted_number], dtype=np.int8)
+        db.session.commit()
+        socketio.emit("ExtractedNumber", {"number": str(extracted_number)}, room=room_code)
+        return str(extracted_number)
+    else:
+        return "Room not found", 400
