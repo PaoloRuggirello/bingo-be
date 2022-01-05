@@ -3,6 +3,7 @@ from bingo.Room import Room
 from bingo.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
 from dto.CreatedRoomDTO import CreatedRoomDTO
+from dto.JoinedRoomDTO import JoinedRoomDTO
 import repository.RoomRepository as rr
 import repository.UserRepository as ur
 from helper.RoomHelper import *
@@ -35,7 +36,7 @@ def join_room(room_code, user_nickname):
         ur.save(new_user)
         paper_to_return = get_first_available_paper_in_room(room)
         paper_to_return = remove_assigned_cards_from_paper(paper_to_return)
-        return BingoPaperDTO(paper_to_return).toJSON()
+        return JoinedRoomDTO(room.name, BingoPaperDTO(paper_to_return)).toJSON()
     else:
         return 'Cannot join. Game already started', 403
 
