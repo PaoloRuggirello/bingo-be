@@ -7,9 +7,13 @@ from dto.JoinedRoomDTO import JoinedRoomDTO
 import repository.RoomRepository as rr
 import repository.UserRepository as ur
 from helper.RoomHelper import *
-from bingo.Utils import get_random_room_code, socketio, PAPER_NUMBERS, db
+from bingo.Utils import get_random_room_code, socketio, PAPER_NUMBERS, db, PRIZE_LIST
 import numpy as np
 from random import choice
+import repository.CardRepository as cr
+from sqlalchemy.orm.attributes import flag_modified
+from bingo.Prize import Prize
+from flask_socketio import emit
 
 room_controller = Blueprint('room_controller', __name__)
 
@@ -48,14 +52,26 @@ def extract_number(room_code, unique_code):
         if room.unique_code != unique_code:
             return "Wrong unique code!", 403
         is_first_extraction = not game_already_started(room)
-        if is_first_extraction:
-            remove_unused_cards(room)
-        extract_numbers_indexes = room.extracted_numbers - 1 if not is_first_extraction else []
-        remaining_numbers = np.delete(PAPER_NUMBERS, extract_numbers_indexes)
-        extracted_number = choice(remaining_numbers)
-        room.extracted_numbers = np.append(room.extracted_numbers, extracted_number) if not is_first_extraction else np.array([extracted_number], dtype=np.int8)
-        rr.commit()
-        socketio.emit("ExtractedNumber", {"number": str(extracted_number)}, room=room_code)
-        return str(extracted_number)
+        remove_useless_cards_if_needed(room, is_first_extraction)
+        remaining_numbers = get_remaining_numbers(room, is_first_extraction)
+        if len(remaining_numbers) > 0:
+            extracted_number = choice(remaining_numbers)
+            add_extracted_number_to_room(room, is_first_extraction, extracted_number)
+            for paper in room.papers:
+                current_card_and_winner = paper.get_cards_with_number_and_winner(extracted_number, PRIZE_LIST[room.current_prize_index])
+                for card_id in current_card_and_winner:
+                    card_updated = list(filter(lambda card: card.id == card_id, paper.cards))[0]
+                    flag_modified(card_updated, 'extracted_by_row')
+                    flag_modified(card_updated, 'card_numbers')
+                    involved_user = list(filter(lambda user: user.id == card_updated.user_id, room.users))[0]
+                    socketio.emit("UpdatedCard", {"user_nickname": f"{involved_user.nickname}", "card_id": f"{card_updated.id}"}, room=room_code)
+                    if current_card_and_winner[card_id]:
+                        socketio.emit("WinnerEvent", {"user_nickname":f"{involved_user.nickname}", "win_type": f"{Prize(PRIZE_LIST[room.current_prize_index]).name}", "card_id": f"{card_updated.id}"}, room=room_code)
+                        room.current_prize_index += 1
+            db.session.commit()
+            socketio.emit("ExtractedNumber", {"number": str(extracted_number)}, room=room_code)
+            return str(extracted_number)
+        else:
+            return "All numbers already extracted", 200
     else:
         return "Room not found", 400

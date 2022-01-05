@@ -45,4 +45,5 @@ def register_blueprints():
 if __name__ == '__main__':
     db.create_all()
     register_blueprints()
+    print("Bingo online")
     socketio.run(app)

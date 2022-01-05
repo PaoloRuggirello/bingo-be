@@ -1,6 +1,9 @@
 from bingo.BingoPaper import BingoPaper
 import repository.BingoPaperRepository as bpr
 import repository.CardRepository as cr
+import repository.RoomRepository as rr
+from bingo.Utils import PAPER_NUMBERS
+import numpy as np
 
 
 def is_nickname_unique_in_room(room, nickname):
@@ -60,3 +63,19 @@ def remove_unused_cards(room):
                 if card.user_id is None:
                     cards_to_delete.append(card.id)
     cr.delete_cards_by_id_in(cards_to_delete)
+
+
+def remove_useless_cards_if_needed(room, is_first_extraction):
+    if is_first_extraction:
+        remove_unused_cards(room)
+
+
+def get_remaining_numbers(room, is_first_extraction):
+    extract_numbers_indexes = room.extracted_numbers - 1 if not is_first_extraction else []
+    return np.delete(PAPER_NUMBERS, extract_numbers_indexes)
+
+
+def add_extracted_number_to_room(room, is_first_extraction, extracted_number):
+    room.extracted_numbers = np.append(room.extracted_numbers, extracted_number) if not is_first_extraction else np.array([extracted_number], dtype=np.int8)
+    rr.commit()
+
