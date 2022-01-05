@@ -28,13 +28,16 @@ def create_room(room_name, host_nickname):
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])
 def join_room(room_code, user_nickname):
     room = rr.find_by_code(room_code)
-    if not is_nickname_unique_in_room(room, user_nickname):
-        return f"Duplicate nickname {user_nickname} in room with code {room_code}", 400  # Returns bad request
-    new_user = User(user_nickname, room.id)
-    ur.save(new_user)
-    paper_to_return = get_first_available_paper_in_room(room)
-    paper_to_return = remove_assigned_cards_from_paper(paper_to_return)
-    return BingoPaperDTO(paper_to_return).toJSON()
+    if room.extracted_numbers is None:
+        if not is_nickname_unique_in_room(room, user_nickname):
+            return f"Duplicate nickname {user_nickname} in room with code {room_code}", 400  # Returns bad request
+        new_user = User(user_nickname, room.id)
+        ur.save(new_user)
+        paper_to_return = get_first_available_paper_in_room(room)
+        paper_to_return = remove_assigned_cards_from_paper(paper_to_return)
+        return BingoPaperDTO(paper_to_return).toJSON()
+    else:
+        return 'Cannot join. Game already started', 403
 
 
 @room_controller.route("/extract/<room_code>/<unique_code>", methods=['POST'])
