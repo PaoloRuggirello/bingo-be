@@ -3,7 +3,6 @@ from repository import RoomRepository as rr
 from repository import CardRepository as cr
 from helper import RoomHelper as room_helper
 from helper import UserHelper as user_helper
-import json
 
 user_controller = Blueprint('user_controller', __name__)
 

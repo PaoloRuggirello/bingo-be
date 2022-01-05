@@ -7,12 +7,13 @@ def is_nickname_unique_in_room(room, nickname):
     return not nickname in nicknames_in_room
 
 
-def get_first_available_paper_in_room(room):
+def get_first_available_paper_in_room(room, exclude_ids=None):
     if len(room.papers) > 0:
         for paper in room.papers:
-            for card in paper.cards:
-                if card.user_id is None:
-                    return paper
+            if exclude_ids is None or paper.id not in exclude_ids:
+                for card in paper.cards:
+                    if card.user_id is None:
+                        return paper
     new_bingo_paper = BingoPaper(room.id)
     bpr.save(new_bingo_paper)
     return new_bingo_paper
@@ -40,7 +41,7 @@ def exists_user_in_room(room, user_nickname):
 
 
 def generate_bank_bingo_paper(room_id, host_id):
-    bank_bingo_paper = BingoPaper(room_id, True, True)
+    bank_bingo_paper = BingoPaper(room_id, True)
     for card in bank_bingo_paper.cards:
         card.user_id = host_id
     return bank_bingo_paper
