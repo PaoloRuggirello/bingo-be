@@ -29,7 +29,9 @@ def create_room(room_name, host_nickname):
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])
 def join_room(room_code, user_nickname):
     room = rr.find_by_code(room_code)
-    if not game_already_started(room):
+    if room is None:
+        return 'Invalid room code. Room not found!', 404
+    elif not game_already_started(room):
         if not is_nickname_unique_in_room(room, user_nickname):
             return f"Duplicate nickname {user_nickname} in room with code {room_code}", 400  # Returns bad request
         new_user = User(user_nickname, room.id)
