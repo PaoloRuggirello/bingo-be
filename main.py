@@ -15,7 +15,10 @@ def join(data):
     user_nickname = data["user_nickname"]
     user_sid = request.sid
     if user_sid in users_subscriptions:
-        emit("ErrorMessage", {"msg":f"{user_nickname} is already parts of room with code: {users_subscriptions[user_sid][1]}... You need to leave your current room to join another on"})
+        if room_code == users_subscriptions[user_sid][1]:
+            emit("ErrorMessage", {"msg": f"{user_nickname} already in room: {users_subscriptions[user_sid][1]}."})
+        else:
+            emit("ErrorMessage", {"msg":f"{user_nickname} is already parts of room with code: {users_subscriptions[user_sid][1]}... You need to leave your current room to join another on"})
     else:
         join_room(room_code, sid=request.sid)
         users_subscriptions[user_sid] = [user_nickname, room_code]
