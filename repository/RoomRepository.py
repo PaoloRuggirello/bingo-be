@@ -9,3 +9,7 @@ def save(room):
 
 def find_by_code(room_code):
     return Room.query.filter_by(code=room_code).first()
+
+
+def commit():
+    db.session.commit()

@@ -1,5 +1,6 @@
 from bingo.BingoPaper import BingoPaper
 import repository.BingoPaperRepository as bpr
+import repository.CardRepository as cr
 
 
 def is_nickname_unique_in_room(room, nickname):
@@ -46,3 +47,16 @@ def generate_bank_bingo_paper(room_id, host_id):
         card.user_id = host_id
     return bank_bingo_paper
 
+
+def game_already_started(room):
+    return room.extracted_numbers is not None and len(room.extracted_numbers) > 0
+
+
+def remove_unused_cards(room):
+    cards_to_delete = []
+    for paper in room.papers:
+        if not paper.is_host:
+            for card in paper.cards:
+                if card.user_id is None:
+                    cards_to_delete.append(card.id)
+    cr.delete_cards_by_id_in(cards_to_delete)

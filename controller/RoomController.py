@@ -28,7 +28,7 @@ def create_room(room_name, host_nickname):
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])
 def join_room(room_code, user_nickname):
     room = rr.find_by_code(room_code)
-    if room.extracted_numbers is None:
+    if not game_already_started(room):
         if not is_nickname_unique_in_room(room, user_nickname):
             return f"Duplicate nickname {user_nickname} in room with code {room_code}", 400  # Returns bad request
         new_user = User(user_nickname, room.id)
@@ -46,11 +46,14 @@ def extract_number(room_code, unique_code):
     if room is not None:
         if room.unique_code != unique_code:
             return "Wrong unique code!", 403
-        extract_numbers_indexes = room.extracted_numbers - 1 if room.extracted_numbers is not None and len(room.extracted_numbers) > 0 else []
+        is_first_extraction = not game_already_started(room)
+        if is_first_extraction:
+            remove_unused_cards(room)
+        extract_numbers_indexes = room.extracted_numbers - 1 if not is_first_extraction else []
         remaining_numbers = np.delete(PAPER_NUMBERS, extract_numbers_indexes)
         extracted_number = choice(remaining_numbers)
-        room.extracted_numbers = np.append(room.extracted_numbers, extracted_number) if room.extracted_numbers is not None else np.array([extracted_number], dtype=np.int8)
-        db.session.commit()
+        room.extracted_numbers = np.append(room.extracted_numbers, extracted_number) if not is_first_extraction else np.array([extracted_number], dtype=np.int8)
+        rr.commit()
         socketio.emit("ExtractedNumber", {"number": str(extracted_number)}, room=room_code)
         return str(extracted_number)
     else:
