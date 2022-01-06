@@ -5,19 +5,12 @@ from dto.BingoPaperDTO import BingoPaperDTO
 from dto.CreatedRoomDTO import CreatedRoomDTO
 from dto.JoinedRoomDTO import JoinedRoomDTO
 from helper import CardHelper as ch
-import repository.RoomRepository as rr
 import repository.UserRepository as ur
 from helper.RoomHelper import *
-from bingo.Utils import get_random_room_code, socketio, PAPER_NUMBERS, db, PRIZE_LIST
-import numpy as np
+from bingo.Utils import get_random_room_code, socketio, PAPER_NUMBERS, db, PRIZE_LIST, users_subscriptions
 from random import choice
-import repository.CardRepository as cr
-from sqlalchemy.orm.attributes import flag_modified
-from bingo.Prize import Prize
-from flask_socketio import emit
 
 room_controller = Blueprint('room_controller', __name__)
-
 
 @room_controller.route("/create/<room_name>/<host_nickname>", methods=['POST'])
 def create_room(room_name, host_nickname):
@@ -89,4 +82,13 @@ def last_extracted_number(room_code):
             return "No numbers already extracted"
     else:
         return "Room not found", 400
+
+
+@room_controller.route("/online_players/<room_code>")
+def number_of_online_players(room_code):
+    online_players = 0
+    for user_sid in users_subscriptions:
+        if users_subscriptions[user_sid][1] == room_code:
+            online_players += 1
+    return str(online_players)
 

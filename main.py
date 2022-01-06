@@ -1,16 +1,14 @@
-from bingo.Utils import app, db, socketio
+from bingo.Utils import app, db, socketio, users_subscriptions
 from controller.RoomController import room_controller
 from controller.UserController import user_controller
 from controller.BingoPaperController import paper_controller
 from flask_socketio import join_room, emit, leave_room
 from flask import request
 
-users_subscriptions = {}
 
 
 @socketio.on("join_room")
 def join(data):
-    global users_subscriptions
     room_code = data["room_code"]
     user_nickname = data["user_nickname"]
     user_sid = request.sid
@@ -27,7 +25,6 @@ def join(data):
 
 @socketio.on("leave_room")
 def leave():
-    global users_subscriptions
     user_subscription = users_subscriptions[request.sid]
     user_nickname = user_subscription[0]
     room_code = user_subscription[1]
