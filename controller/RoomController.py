@@ -77,3 +77,16 @@ def extract_number(room_code, unique_code):
             return "Game ended, all prizes assigned", 200
     else:
         return "Room not found", 400
+
+
+@room_controller.route("/last_extracted_number/<room_code>", methods=['GET'])
+def last_extracted_number(room_code):
+    room = rr.find_by_code(room_code)
+    if room is not None:
+        if room.last_extracted_number is not None:
+            return str(room.last_extracted_number)
+        else:
+            return "No numbers already extracted"
+    else:
+        return "Room not found", 400
+
