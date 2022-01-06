@@ -7,7 +7,7 @@ from dto.JoinedRoomDTO import JoinedRoomDTO
 from helper import CardHelper as ch
 import repository.UserRepository as ur
 from helper.RoomHelper import *
-from bingo.Utils import get_random_room_code, socketio, PAPER_NUMBERS, db, PRIZE_LIST, users_subscriptions
+from bingo.Utils import get_random_room_code, socketio, db, PRIZE_LIST, users_subscriptions
 from random import choice
 
 room_controller = Blueprint('room_controller', __name__)
