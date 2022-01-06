@@ -43,4 +43,4 @@ if __name__ == '__main__':
     db.create_all()
     register_blueprints()
     print("Bingo online")
-    socketio.run(app)
+    socketio.run(app, port=8080, host='0.0.0.0')
