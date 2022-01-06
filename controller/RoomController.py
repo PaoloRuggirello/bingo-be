@@ -26,7 +26,7 @@ def create_room(room_name, host_nickname):
 
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])
 def join_room(room_code, user_nickname):
-    room = rr.find_by_code(room_code)
+    room = rr.find_by_code(room_code.upper())
     if room is None:
         return 'Invalid room code. Room not found!', 404
     elif not game_already_started(room):
@@ -77,6 +77,7 @@ def last_extracted_number(room_code):
     room = rr.find_by_code(room_code)
     if room is not None:
         if room.last_extracted_number is not None:
+            print(f"Request last extracted number, {room.last_extracted_number}")
             return str(room.last_extracted_number)
         else:
             return "No numbers already extracted"

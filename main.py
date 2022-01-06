@@ -9,7 +9,7 @@ from flask import request
 
 @socketio.on("join_room")
 def join(data):
-    room_code = data["room_code"]
+    room_code = data["room_code"].upper()
     user_nickname = data["user_nickname"]
     user_sid = request.sid
     if user_sid in users_subscriptions:
@@ -21,16 +21,19 @@ def join(data):
         join_room(room_code, sid=request.sid)
         users_subscriptions[user_sid] = [user_nickname, room_code]
         emit("RoomServiceMessages", {'msg': user_nickname + ' joined.'}, room=room_code)
+        print(f"{user_nickname} joined.")
 
 
 @socketio.on("leave_room")
 def leave():
-    user_subscription = users_subscriptions[request.sid]
-    user_nickname = user_subscription[0]
-    room_code = user_subscription[1]
-    emit("RoomServiceMessages", {"msg":f"{user_nickname} left the room"}, room=room_code)
-    leave_room(room_code, request.sid)
-    del users_subscriptions[request.sid]
+    user_subscription = users_subscriptions[request.sid] if request.sid in users_subscriptions else None
+    if user_subscription is not None:
+        user_nickname = user_subscription[0]
+        room_code = user_subscription[1]
+        emit("RoomServiceMessages", {"msg":f"{user_nickname} left the room"}, room=room_code)
+        print(f"{user_nickname} left the room")
+        leave_room(room_code, request.sid)
+        del users_subscriptions[request.sid]
 
 
 def register_blueprints():
@@ -43,4 +46,4 @@ if __name__ == '__main__':
     db.create_all()
     register_blueprints()
     print("Bingo online")
-    socketio.run(app, port=8080, host='0.0.0.0')
+    socketio.run(app, host='0.0.0.0')
