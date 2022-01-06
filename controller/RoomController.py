@@ -84,11 +84,21 @@ def last_extracted_number(room_code):
         return "Room not found", 400
 
 
-@room_controller.route("/online_players/<room_code>")
+@room_controller.route("/online_players/<room_code>", methods=['GET'])
 def number_of_online_players(room_code):
     online_players = 0
     for user_sid in users_subscriptions:
         if users_subscriptions[user_sid][1] == room_code:
             online_players += 1
     return str(online_players)
+
+
+@room_controller.route("/winners/<room_code>", methods=['GET'])
+def get_room_winners(room_code):
+    room = rr.find_by_code(room_code)
+    if room is not None:
+        return room.winners
+    else:
+        return "Room not found", 400
+
 
