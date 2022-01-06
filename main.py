@@ -26,7 +26,7 @@ def join(data):
 
 
 @socketio.on("leave_room")
-def leave(data):
+def leave():
     global users_subscriptions
     user_subscription = users_subscriptions[request.sid]
     user_nickname = user_subscription[0]
