@@ -59,7 +59,7 @@ def extract_number(room_code, unique_code):
                 is_winner_number = False
                 for paper in room.papers:
                     current_card_and_winner = paper.get_cards_with_number_and_winner(extracted_number, PRIZE_LIST[room.current_prize_index])
-                    is_winner_number = ch.set_number_as_extracted_in_card(current_card_and_winner, paper.cards, room)
+                    is_winner_number = ch.set_number_as_extracted_in_card(current_card_and_winner, paper.cards, room, is_winner_number)
                 if is_winner_number:
                     room.current_prize_index += 1
                 db.session.commit()

@@ -4,8 +4,7 @@ from bingo.Prize import Prize
 from helper import UserHelper, RoomHelper
 
 
-def set_number_as_extracted_in_card(current_card_and_winner, paper_cards, room):
-    is_winner_number = False
+def set_number_as_extracted_in_card(current_card_and_winner, paper_cards, room, is_winner_number):
     for card_id in current_card_and_winner:
         card_updated = get_card_with_id_from_paper(card_id, paper_cards)
         set_extracted_fields_as_modified(card_updated)
