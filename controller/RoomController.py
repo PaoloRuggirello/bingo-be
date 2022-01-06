@@ -4,6 +4,7 @@ from bingo.User import User
 from dto.BingoPaperDTO import BingoPaperDTO
 from dto.CreatedRoomDTO import CreatedRoomDTO
 from dto.JoinedRoomDTO import JoinedRoomDTO
+from helper import CardHelper as ch
 import repository.RoomRepository as rr
 import repository.UserRepository as ur
 from helper.RoomHelper import *
@@ -56,24 +57,23 @@ def extract_number(room_code, unique_code):
         is_first_extraction = not game_already_started(room)
         remove_useless_cards_if_needed(room, is_first_extraction)
         remaining_numbers = get_remaining_numbers(room, is_first_extraction)
-        if len(remaining_numbers) > 0:
-            extracted_number = choice(remaining_numbers)
-            add_extracted_number_to_room(room, is_first_extraction, extracted_number)
-            for paper in room.papers:
-                current_card_and_winner = paper.get_cards_with_number_and_winner(extracted_number, PRIZE_LIST[room.current_prize_index])
-                for card_id in current_card_and_winner:
-                    card_updated = list(filter(lambda card: card.id == card_id, paper.cards))[0]
-                    flag_modified(card_updated, 'extracted_by_row')
-                    flag_modified(card_updated, 'card_numbers')
-                    involved_user = list(filter(lambda user: user.id == card_updated.user_id, room.users))[0]
-                    socketio.emit("UpdatedCard", {"user_nickname": f"{involved_user.nickname}", "card_id": f"{card_updated.id}"}, room=room_code)
-                    if current_card_and_winner[card_id]:
-                        socketio.emit("WinnerEvent", {"user_nickname":f"{involved_user.nickname}", "win_type": f"{Prize(PRIZE_LIST[room.current_prize_index]).name}", "card_id": f"{card_updated.id}"}, room=room_code)
-                        room.current_prize_index += 1
-            db.session.commit()
-            socketio.emit("ExtractedNumber", {"number": str(extracted_number)}, room=room_code)
-            return str(extracted_number)
+        if room.current_prize_index < 5:
+            if len(remaining_numbers) > 0:
+                extracted_number = choice(remaining_numbers)
+                room.last_extracted_number = extracted_number
+                socketio.emit("ExtractedNumber", {"number": str(extracted_number)}, room=room_code)
+                add_extracted_number_to_room(room, is_first_extraction, extracted_number)
+                is_winner_number = False
+                for paper in room.papers:
+                    current_card_and_winner = paper.get_cards_with_number_and_winner(extracted_number, PRIZE_LIST[room.current_prize_index])
+                    is_winner_number = ch.set_number_as_extracted_in_card(current_card_and_winner, paper.cards, room)
+                if is_winner_number:
+                    room.current_prize_index += 1
+                db.session.commit()
+                return str(extracted_number)
+            else:
+                return "All numbers already extracted", 200
         else:
-            return "All numbers already extracted", 200
+            return "Game ended, all prizes assigned", 200
     else:
         return "Room not found", 400

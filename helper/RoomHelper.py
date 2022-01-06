@@ -79,3 +79,9 @@ def add_extracted_number_to_room(room, is_first_extraction, extracted_number):
     room.extracted_numbers = np.append(room.extracted_numbers, extracted_number) if not is_first_extraction else np.array([extracted_number], dtype=np.int8)
     rr.commit()
 
+
+def fill_room_winners(room, prize_name, winner_nickname):
+    if prize_name in room.winners:
+        room.winners[prize_name].append(winner_nickname)
+    else:
+        room.winners[prize_name] = [winner_nickname]
