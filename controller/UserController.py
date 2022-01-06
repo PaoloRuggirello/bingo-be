@@ -37,4 +37,3 @@ def get_user_cards(room_code, user_nickname):
 
 
 
-
