@@ -4,33 +4,35 @@ from controller.UserController import user_controller
 from controller.BingoPaperController import paper_controller
 from flask_socketio import join_room, emit, leave_room
 from flask import request
+from dto.socket.MessageDTO import MessageDTO
+from helper.SocketTypeEnum import SocketTypeEnum
 
 
-
-@socketio.on("join_room")
+@socketio.on(SocketTypeEnum.JoinRoom.value)
 def join(data):
     room_code = data["room_code"].upper()
     user_nickname = data["user_nickname"]
     user_sid = request.sid
     if user_sid in users_subscriptions:
         if room_code == users_subscriptions[user_sid][1]:
-            emit("ErrorMessage", {"msg": f"{user_nickname} already in room: {users_subscriptions[user_sid][1]}."})
+            emit(SocketTypeEnum.ErrorMessage.value, dict(MessageDTO(f"{user_nickname} already in room: {users_subscriptions[user_sid][1]}.")))
         else:
-            emit("ErrorMessage", {"msg":f"{user_nickname} is already parts of room with code: {users_subscriptions[user_sid][1]}... You need to leave your current room to join another on"})
+            emit(SocketTypeEnum.ErrorMessage.value,
+                 dict(MessageDTO(f"{user_nickname} is already parts of room with code: {users_subscriptions[user_sid][1]}... You need to leave your current room to join another on")))
     else:
         join_room(room_code, sid=request.sid)
         users_subscriptions[user_sid] = [user_nickname, room_code]
-        emit("RoomServiceMessages", {'msg': user_nickname + ' joined.'}, room=room_code)
-        print(f"{user_nickname} joined.")
+        emit(SocketTypeEnum.RoomServiceMessages.value, dict(MessageDTO(user_nickname + ' joined.')), room=room_code)
+        print(user_nickname + ' joined.')
 
 
-@socketio.on("leave_room")
+@socketio.on(SocketTypeEnum.LeaveRoom.value)
 def leave():
     user_subscription = users_subscriptions[request.sid] if request.sid in users_subscriptions else None
     if user_subscription is not None:
         user_nickname = user_subscription[0]
         room_code = user_subscription[1]
-        emit("RoomServiceMessages", {"msg":f"{user_nickname} left the room"}, room=room_code)
+        emit(SocketTypeEnum.RoomServiceMessages.value, dict(MessageDTO(f"{user_nickname} left the room")), room=room_code)
         print(f"{user_nickname} left the room")
         leave_room(room_code, request.sid)
         del users_subscriptions[request.sid]

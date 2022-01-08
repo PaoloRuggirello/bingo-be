@@ -1,23 +1,24 @@
 from sqlalchemy.orm.attributes import flag_modified
-from bingo.Utils import socketio, PRIZE_LIST
+from bingo.Utils import PRIZE_LIST
 from bingo.Prize import Prize
 from helper import UserHelper, RoomHelper
+from dto.socket.UserCardElementDTO import UserCardElementDTO
 
 
-def set_number_as_extracted_in_card(current_card_and_winner, paper_cards, room, is_winner_number):
+def set_number_as_extracted_in_card(current_card_and_winner, paper_cards, room):
+    winners_list = []
+    updated_cards_list = []
     for card_id in current_card_and_winner:
         card_updated = get_card_with_id_from_paper(card_id, paper_cards)
         set_extracted_fields_as_modified(card_updated)
         involved_user = UserHelper.get_user_with_id_from_list_of_users(card_updated.user_id, room.users)
-        socketio.emit("UpdatedCard", {"user_nickname": f"{involved_user.nickname}", "card_id": f"{card_updated.id}"}, room=room.code)
+        updated_cards_list.append(UserCardElementDTO(involved_user.nickname, card_updated.id))
         if current_card_and_winner[card_id]:
             prize_name = Prize(PRIZE_LIST[room.current_prize_index]).name
-            socketio.emit("WinnerEvent", {"user_nickname": f"{involved_user.nickname}", "win_type": f"{prize_name}",
-                                          "card_id": f"{card_updated.id}"}, room=room.code)
+            winners_list.append(UserCardElementDTO(involved_user.nickname, card_updated.id))
             RoomHelper.fill_room_winners(room, prize_name, involved_user.nickname)
             flag_modified(room, 'winners')
-            is_winner_number = True
-    return is_winner_number
+    return updated_cards_list, winners_list
 
 
 def get_card_with_id_from_paper(card_id, paper_cards):
