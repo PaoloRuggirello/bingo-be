@@ -1,0 +1,1 @@
+#In this directory you can find the last build of the bingo-core library
