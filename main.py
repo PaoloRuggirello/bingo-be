@@ -6,7 +6,9 @@ from flask_socketio import join_room, emit, leave_room
 from flask import request
 
 
-
+@app.route("/")
+def main_page():
+    return "Hellow world, main page"
 @socketio.on("join_room")
 def join(data):
     room_code = data["room_code"].upper()
