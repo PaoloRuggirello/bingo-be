@@ -114,7 +114,7 @@ def online_players(room_code):
         if users_subscriptions[user_sid][1] == room_code:
             online_players_number += 1
             online_players_nicknames.append(users_subscriptions[user_sid][0])
-    return {'online_players_number':str(online_players_number), 'online_players_nicknames':online_players_nicknames}
+    return {'online_players_number': str(online_players_number), 'online_players_nicknames': online_players_nicknames}
 
 
 @room_controller.route("/winners/<room_code>", methods=['GET'])
