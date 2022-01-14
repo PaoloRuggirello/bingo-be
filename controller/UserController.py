@@ -20,7 +20,7 @@ def assign_cards(room_code, user_nickname):
         already_assigned_cards = user_helper.assign_cards_to_user(user, cards)
         return (already_assigned_cards.dumps(), 400) if len(already_assigned_cards) > 0 else ('Success', 200)
     else:
-        return "Room not found", 400
+        return "Room not found", 404
 
 
 @user_controller.route("/<room_code>/<user_nickname>/cards", methods=['GET'])
@@ -31,9 +31,9 @@ def get_user_cards(room_code, user_nickname):
         if len(user_in_room) == 1:
             return UserCardsDTO(user_in_room[0].cards).toJSON()
         else:
-            return "User not found", 400
+            return "User not found", 404
     else:
-        return "Room not found", 400
+        return "Room not found", 404
 
 
 

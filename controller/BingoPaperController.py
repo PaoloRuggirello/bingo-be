@@ -14,4 +14,4 @@ def next_paper_excluding(room_code):
         bingo_paper = rh.get_first_available_paper_in_room(room, exclude_ids)
         return BingoPaperDTO(bingo_paper).toJSON()
     else:
-        return 'Room not found', 400
+        return 'Room not found', 404

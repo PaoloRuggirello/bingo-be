@@ -90,7 +90,7 @@ def extract_number(room_code, unique_code):
         else:
             return "Game ended, all prizes assigned", 200
     else:
-        return "Room not found", 400
+        return "Room not found", 404
 
 
 @room_controller.route("/last_extracted_number/<room_code>", methods=['GET'])
@@ -103,7 +103,7 @@ def last_extracted_number(room_code):
         else:
             return "No numbers already extracted"
     else:
-        return "Room not found", 400
+        return "Room not found", 404
 
 
 @room_controller.route("/online_players/<room_code>", methods=['GET'])
@@ -123,6 +123,6 @@ def get_room_winners(room_code):
     if room is not None:
         return room.winners
     else:
-        return "Room not found", 400
+        return "Room not found", 404
 
 
