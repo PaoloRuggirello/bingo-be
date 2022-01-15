@@ -12,6 +12,9 @@ def is_nickname_unique_in_room(room, nickname):
 
 
 def get_first_available_paper_in_room(room, exclude_ids=None):
+    """
+    This method return the first paper in room with, at least, one free card (card not assigned to any user)
+    """
     if len(room.papers) > 0:
         for paper in room.papers:
             if exclude_ids is None or paper.id not in exclude_ids:
@@ -24,6 +27,9 @@ def get_first_available_paper_in_room(room, exclude_ids=None):
 
 
 def remove_assigned_cards_from_paper(bingo_paper):
+    """
+    This method return the specified bingo paper containing only free cards
+    """
     filtered_paper = []
     for card in bingo_paper.cards:
         if card.user_id is None:
@@ -56,6 +62,9 @@ def game_already_started(room):
 
 
 def remove_unused_cards(room):
+    """
+    This method is used to remove unassigned cards from a room when the game start
+    """
     cards_to_delete = []
     for paper in room.papers:
         if not paper.is_host:
@@ -81,6 +90,9 @@ def add_extracted_number_to_room(room, is_first_extraction, extracted_number):
 
 
 def fill_room_winners(room, prize_name, winner_nickname):
+    """
+    This method add the specified user to the list of winners of the specified room
+    """
     if prize_name in room.winners:
         room.winners[prize_name].append(winner_nickname)
     else:

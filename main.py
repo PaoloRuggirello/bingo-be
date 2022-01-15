@@ -10,6 +10,9 @@ from helper.SocketTypeEnum import SocketTypeEnum
 
 @socketio.on(SocketTypeEnum.JoinRoom.value)
 def join(data):
+    """
+    Method when a new user join the socket
+    """
     room_code = data["room_code"].upper()
     user_nickname = data["user_nickname"]
     user_sid = request.sid
@@ -28,6 +31,9 @@ def join(data):
 
 @socketio.on(SocketTypeEnum.LeaveRoom.value)
 def leave():
+    """
+    Method called when a user leave the socket
+    """
     user_subscription = users_subscriptions[request.sid] if request.sid in users_subscriptions else None
     if user_subscription is not None:
         user_nickname = user_subscription[0]

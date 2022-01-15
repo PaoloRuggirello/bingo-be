@@ -6,6 +6,9 @@ from dto.socket.UserCardElementDTO import UserCardElementDTO
 
 
 def set_number_as_extracted_in_card(current_card_and_winner, paper_cards, room):
+    """
+    This method is used to set the extracted number as "extracted" in all the room's cards
+    """
     winners_list = []
     updated_cards_list = []
     for card_id in current_card_and_winner:
@@ -22,6 +25,9 @@ def set_number_as_extracted_in_card(current_card_and_winner, paper_cards, room):
 
 
 def get_card_with_id_from_paper(card_id, paper_cards):
+    """
+    This method return the cards with the specified id from a list of cards
+    """
     possible_cards = list(filter(lambda card: card.id == card_id, paper_cards))
     if len(possible_cards) == 1:
         return possible_cards[0]
@@ -32,5 +38,8 @@ def get_card_with_id_from_paper(card_id, paper_cards):
 
 
 def set_extracted_fields_as_modified(card):
+    """
+    This method set these two fields of a card as changed in order to store them
+    """
     flag_modified(card, 'extracted_by_row')
     flag_modified(card, 'card_numbers')
