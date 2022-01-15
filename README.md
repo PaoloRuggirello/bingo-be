@@ -3,13 +3,13 @@
 Exam project for "Programming" university course @ UniCampus Rome - Developed by Paolo Ruggirello & Simone Pio Caronia.
 The back end module is developed in python using a framework called flask.
 
-###All modules:
+### All modules:
 Bingo-core: https://github.com/PaoloRuggirello/bingo-core \
 Bingo-BE: https://github.com/PaoloRuggirello/bingo-be \
 Bingo-FE: https://github.com/spioc999/bingo_fe
 
 
-###Building and run the project
+### Building and run the project
 You can find building and install instructions inside bingo-core>README.md file.
 
 ### Project Structure
