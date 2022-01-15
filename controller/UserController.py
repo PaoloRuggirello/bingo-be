@@ -7,6 +7,10 @@ from dto.UserCardsDTO import UserCardsDTO
 
 user_controller = Blueprint('user_controller', __name__)
 
+"""
+This Controller contains endpoints useful for obtain information or perform operation on users
+"""
+
 
 @user_controller.route("/card/assign/<room_code>/<user_nickname>", methods=['POST'])
 def assign_cards(room_code, user_nickname):

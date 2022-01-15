@@ -17,9 +17,19 @@ from helper.SocketTypeEnum import SocketTypeEnum
 
 room_controller = Blueprint('room_controller', __name__)
 
+"""
+This Controller contains endpoints useful for obtain information or perform operation on rooms
+"""
+
 
 @room_controller.route("/create/<room_name>/<host_nickname>", methods=['POST'])
 def create_room(room_name, host_nickname):
+    """
+    This service create a new room.
+    @param room_name: The name of the room that the user wants to create
+    @param host_nickname: The nickname of the user that wants to create the room
+    @return: the host's paper and the unique code used to extract numbers
+    """
     room_unique_code = get_random_room_code(6)
     room = Room(room_name, room_unique_code)
     rr.save(room)
@@ -32,6 +42,12 @@ def create_room(room_name, host_nickname):
 
 @room_controller.route("/join/<room_code>/<user_nickname>", methods=['POST'])
 def join_room(room_code, user_nickname):
+    """
+    This service is used by users to join a room
+    @param room_code: the code of the room
+    @param user_nickname: the nickname of the user that wants to join
+    @return: The list of available cards
+    """
     room = rr.find_by_code(room_code.upper())
     if room is None:
         return 'Invalid room code. Room not found!', 404
@@ -49,6 +65,12 @@ def join_room(room_code, user_nickname):
 
 @room_controller.route("/extract/<room_code>/<unique_code>", methods=['POST'])
 def extract_number(room_code, unique_code):
+    """
+    This service is used to extract a new number
+    @param room_code: the code of the room
+    @param unique_code: the unique code of the room, only how has this code can extract a new number
+    @return: the extracted number
+    """
     room = rr.find_by_code(room_code)
     if room is not None:
         if room.unique_code != unique_code:
@@ -95,6 +117,10 @@ def extract_number(room_code, unique_code):
 
 @room_controller.route("/last_extracted_number/<room_code>", methods=['GET'])
 def last_extracted_number(room_code):
+    """
+    This service return the last extracted number for the specified room
+    @param room_code: the code of the room
+    """
     room = rr.find_by_code(room_code)
     if room is not None:
         if room.last_extracted_number is not None:
@@ -108,6 +134,10 @@ def last_extracted_number(room_code):
 
 @room_controller.route("/online_players/<room_code>", methods=['GET'])
 def online_players(room_code):
+    """
+    This service is used to obtain the list of online players
+    @param room_code: the code of the room
+    """
     online_players_number = 0
     online_players_nicknames = []
     for user_sid in users_subscriptions:
@@ -119,6 +149,11 @@ def online_players(room_code):
 
 @room_controller.route("/winners/<room_code>", methods=['GET'])
 def get_room_winners(room_code):
+    """
+    This service is used to obtain the list of the room winners
+    @param room_code: the code of the room
+    @return: the list of winners for each type of win
+    """
     room = rr.find_by_code(room_code)
     if room is not None:
         return room.winners

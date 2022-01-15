@@ -5,6 +5,10 @@ import repository.RoomRepository as rr
 
 paper_controller = Blueprint('paper_controller', __name__)
 
+"""
+This Controller contains endpoints useful for obtain information or perform operation on bingo-papers
+"""
+
 
 @paper_controller.route('/next/<room_code>', methods=['POST'])
 def next_paper_excluding(room_code):
