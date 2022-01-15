@@ -14,6 +14,11 @@ This Controller contains endpoints useful for obtain information or perform oper
 
 @user_controller.route("/card/assign/<room_code>/<user_nickname>", methods=['POST'])
 def assign_cards(room_code, user_nickname):
+    """
+    This service is used to assign a list of cards to the specified user
+    @param room_code: the code of the room
+    @param user_nickname: the nickname of the involved user
+    """
     room = rr.find_by_code(room_code)
     if room is not None:
         user = room_helper.get_user_from_room(room, user_nickname)
@@ -29,6 +34,12 @@ def assign_cards(room_code, user_nickname):
 
 @user_controller.route("/<room_code>/<user_nickname>/cards", methods=['GET'])
 def get_user_cards(room_code, user_nickname):
+    """
+    This service is used to obtain the list of cards assigned to a specified user
+    @param room_code: the code of the room
+    @param user_nickname: the nickname of the involved user
+    @return: the list of cards assigned to the specified user
+    """
     room = rr.find_by_code(room_code)
     if room is not None:
         user_in_room = list(filter(lambda user: user.nickname == user_nickname, room.users))

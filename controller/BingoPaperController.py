@@ -12,6 +12,11 @@ This Controller contains endpoints useful for obtain information or perform oper
 
 @paper_controller.route('/next/<room_code>', methods=['POST'])
 def next_paper_excluding(room_code):
+    """
+    This service is used to obtain a list of free cards that can be assigned to new users
+    @param room_code: the code of the room
+    @return: The list of free cards
+    """
     exclude_ids = request.json['exclude'] if request.json is not None else []
     room = rr.find_by_code(room_code)
     if room is not None:
